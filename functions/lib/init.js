@@ -152,7 +152,7 @@ const SEED_USERS = `INSERT INTO users (username, password) VALUES
   ('admin', '$2b$10$kADwbZYc6qfXTjPLPwjrQ.Aezy9pwJm.EpQo1faDSluGqs0sNWA1S')`;
 
 const SEED_SETTINGS = `INSERT INTO site_settings (key, value) VALUES
-  ('site_name', '我的导航'),
+  ('site_name', '我的导航-个人专属导航页-Navitem'),
   ('admin_theme', 'light'),
   ('bg_desktop_type', 'url'),
   ('bg_desktop_value', 'https://main.ssss.nyc.mn/background.webp'),
