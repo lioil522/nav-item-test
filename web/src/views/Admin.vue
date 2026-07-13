@@ -66,20 +66,6 @@
               <div class="welcome-icon time-icon">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#1abc9c" stroke-width="2"/><path d="M12 6v6l4 2" stroke="#1abc9c" stroke-width="2" stroke-linecap="round"/></svg>
               </div>
-              <div class="welcome-label">本次登录时间</div>
-              <div class="welcome-value">{{ currentLoginTime || '--' }}</div>
-            </div>
-            <div class="welcome-card">
-              <div class="welcome-icon ip-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#1abc9c" stroke-width="2"/><path d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z" stroke="#1abc9c" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="#1abc9c"/></svg>
-              </div>
-              <div class="welcome-label">本次登录IP</div>
-              <div class="welcome-value">{{ currentLoginIp || '--' }}</div>
-            </div>
-            <div class="welcome-card">
-              <div class="welcome-icon time-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#1abc9c" stroke-width="2"/><path d="M12 6v6l4 2" stroke="#1abc9c" stroke-width="2" stroke-linecap="round"/></svg>
-              </div>
               <div class="welcome-label">上次登录时间</div>
               <div class="welcome-value">{{ lastLoginTime || '--' }}</div>
             </div>
@@ -117,8 +103,6 @@ import UserManage from './admin/UserManage.vue';
 import ThemeManage from './admin/ThemeManage.vue';
 
 const page = ref('welcome');
-const currentLoginTime = ref('');
-const currentLoginIp = ref('');
 const lastLoginTime = ref('');
 const lastLoginIp = ref('');
 const isLoggedIn = ref(false);
@@ -191,8 +175,6 @@ onUnmounted(() => {
 async function fetchLastLoginInfo() {
   try {
     const { data } = await getMe();
-    currentLoginTime.value = data.current_login_time || '';
-    currentLoginIp.value = data.current_login_ip || '';
     lastLoginTime.value = data.last_login_time || '';
     lastLoginIp.value = data.last_login_ip || '';
   } catch (error) {
@@ -218,8 +200,6 @@ async function handleLogin() {
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       isLoggedIn.value = true;
-      currentLoginTime.value = response.data.currentLoginTime || '';
-      currentLoginIp.value = response.data.currentLoginIp || '';
       lastLoginTime.value = response.data.lastLoginTime || '';
       lastLoginIp.value = response.data.lastLoginIp || '';
     }
@@ -602,10 +582,7 @@ function closeSider() {
 }
 .welcome-cards {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
   gap: 32px;
-  max-width: 640px;
 }
 .welcome-card {
   background: var(--admin-card-bg);
