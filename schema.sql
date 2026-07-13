@@ -170,7 +170,7 @@ INSERT INTO users (username, password) VALUES
 
 -- ================= 默认站点设置 =================
 INSERT INTO site_settings (key, value) VALUES
-  ('site_name', '我的导航'),
+  ('site_name', '我的导航-个人专属导航页-Navitem'),
   ('admin_theme', 'light'),
   ('bg_desktop_type', 'url'),
   ('bg_desktop_value', 'https://main.ssss.nyc.mn/background.webp'),

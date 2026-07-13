@@ -206,6 +206,13 @@ app.delete('/cards/:id', auth, async (c) => {
 });
 
 // ==================== 文件上传（R2） ====================
+// 根据上传目标返回文件名前缀，用于区分不同用途的图片（各自独立展示，互不混淆）
+function themePrefix(target) {
+  return target === 'favicon' ? 'favicon-'
+    : target === 'mobile' ? 'bg-mobile-'
+    : 'bg-desktop-';
+}
+
 async function saveToR2(c, field, prefix) {
   const body = await c.req.parseBody();
   const file = body[field];
@@ -378,9 +385,35 @@ app.put('/settings', auth, async (c) => {
 });
 
 app.post('/settings/upload-bg', auth, async (c) => {
-  const filename = await saveToR2(c, 'bg', 'bg-');
+  const body = await c.req.parseBody();
+  const filename = await saveToR2(c, 'bg', themePrefix(body.target));
   if (!filename) return c.json({ code: 400, message: '未选择文件' }, 400);
   return c.json({ code: 200, data: { url: '/uploads/' + filename } });
+});
+
+// 列出某个目标（favicon/desktop/mobile）已上传的图片，仅返回该用途的图片
+app.get('/settings/uploads', auth, async (c) => {
+  const prefix = themePrefix(c.req.query('target'));
+  const list = await c.env.BUCKET.list({ prefix });
+  const items = (list.objects || []).map(o => ({
+    key: o.key,
+    url: '/uploads/' + o.key,
+    size: o.size,
+    uploaded: o.uploaded,
+  }));
+  // 按上传时间倒序，最新的排在前面
+  items.sort((a, b) => new Date(b.uploaded).getTime() - new Date(a.uploaded).getTime());
+  return c.json({ code: 200, data: items });
+});
+
+// 删除一张已上传的主题图片（仅允许 bg-/favicon- 前缀，避免误删卡片 logo 等）
+app.delete('/settings/uploads/:key', auth, async (c) => {
+  const key = c.req.param('key');
+  if (!key || !(key.startsWith('bg-') || key.startsWith('favicon-')) || key.includes('/')) {
+    return c.json({ code: 400, message: '非法文件名' }, 400);
+  }
+  await c.env.BUCKET.delete(key);
+  return c.json({ code: 200, message: '已删除' });
 });
 
 export const onRequest = handle(app);
